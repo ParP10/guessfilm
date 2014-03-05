@@ -13,6 +13,7 @@ import guessFilm.model.Questions;
  * 
  */
 public class GuessFilm {
+
 	public enum Mode {
 		TRAINING_MODE, GUESS_MODE, APPEND_NEW_QUESTIONS, APPEND_NEW_FILMS;
 	};
@@ -32,6 +33,10 @@ public class GuessFilm {
 
 	public static void main(String[] args) throws Exception {
 		GuessFilm guessFilm = new GuessFilm();
+		DataBase dao = new DataBase();
+
+		guessFilm.films.initialize(dao.findFilm());
+		guessFilm.questions.initialize(dao.findQuestion());
 
 		/*
 		 * Choose mode
@@ -128,13 +133,9 @@ public class GuessFilm {
 		
 	}
 
-	/**
-	 * 
-	 * @return Program mode
-	 */
+
 	private Mode modeSelection() {
 		return user.getMode();
 	}
 
 }
-

@@ -1,6 +1,12 @@
 package guessFilm.model;
 
-import guessFilm.DataBase;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 
 
 /**
@@ -8,34 +14,49 @@ import guessFilm.DataBase;
  * Store data about film
  *
  */
+
+@Entity
+@Table(name="films")
 public class Film {
 	
+	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@Column(name="id")
 	private int id;
+	
+	@Column(name="name")
 	private String name;
+	
+	public Film() {	
+	}
 	
 	public Film(int id, String name) {
 		this.id = id;
 		this.name = name;
 	}
 	
-	public Film() {
-	
+	public Film(String name) {
+		this.name = name;
 	}
 	
-	
-	/**
-	 * @return String representation of film
-	 */
+	public int getFilmId() {
+		return id;
+	}
+
+	public void setFilmId(int id) {
+		this.id = id;
+	}
+
 	public String getFilmName() {
 		return name;
 	}
-	
-	/**
-	 * Add new Film into database
-	 * @param idFilm
-	 */
+
+	public void setFilmName(String name) {
+		this.name = name;
+	}
+
 	public void appendNewFilm(int idFilm) {
-		// TODO add new film in database
+		
 	}
 
 }
