@@ -1,15 +1,13 @@
 package guessFilm.model;
 
+import guessFilm.DataBase;
+
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 /**
  * 
@@ -22,16 +20,47 @@ public class Questions {
 	private int amountAskedQuestions;
 	private ArrayList<Question> listQuestions;
 
-	public Questions() {
+	/*public Questions() {
 		initializeListQuestions();
 		amountQuestions = listQuestions.size();
 		amountAskedQuestions = 0;
+	}*/
+
+	public int getAmountAskedQuestions() {
+		return amountAskedQuestions;
 	}
+
+	public void setAmountAskedQuestions(int amountAskedQuestions) {
+		this.amountAskedQuestions = amountAskedQuestions;
+	}
+
+	public ArrayList<Question> getListQuestions() {
+		return listQuestions;
+	}
+
+	public void setListQuestions(ArrayList<Question> listQuestions) {
+		this.listQuestions = listQuestions;
+	}
+	
+	public int getAmountQuestions() {
+		return amountQuestions;
+	}
+
+	public void setAmountQuestions(int amountQuestions) {
+		this.amountQuestions = amountQuestions;
+	}
+	
+	public void initialize(ArrayList<Question> listQuestions) {
+		this.listQuestions = listQuestions;
+		this.amountQuestions = listQuestions.size();
+		this.amountAskedQuestions = 0; 
+	}
+
 
 	/**
 	 * Initialize list of questions (listQuestions). Select data from database
 	 */
-	private void initializeListQuestions() {
+	/*private void initializeListQuestions() {
 		listQuestions = new ArrayList<Question>();
 		int index = 1;
 		
@@ -50,14 +79,9 @@ public class Questions {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
+	}*/
 
-	/**
-	 * @return Amount questions in database
-	 */
-	public int getAmountQuestions() {
-		return amountQuestions;
-	}
+
 
 	/**
 	 * 
@@ -73,7 +97,8 @@ public class Questions {
 	 * Append new questions in database
 	 */
 	public void appendNewQuestions() {		
-		int index = amountQuestions + 1;
+		//int index = amountQuestions + 1;
+		DataBase dao = new DataBase();
 		
 		// read from file
 		try {
@@ -82,8 +107,11 @@ public class Questions {
 			try {
 				String line = reader.readLine();
 				while (line != null) {
-					listQuestions.add(new Question(index++, line));
+					
+					Question newQuestion = new Question(line); 
+					listQuestions.add(newQuestion);
 					amountQuestions++;
+					dao.addQuestion(newQuestion);
 					line = reader.readLine();
 				}
 			} finally {
@@ -93,7 +121,8 @@ public class Questions {
 			e.printStackTrace();
 		}
 		
-		// save new information in file
+		// save new information in file. Old version
+		/*
 		try {
 			OutputStream outputStream = new FileOutputStream(new File("questions.txt"));
 			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
@@ -108,6 +137,7 @@ public class Questions {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		*/
 		
 	}
 

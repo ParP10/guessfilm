@@ -148,13 +148,13 @@ public class Learning {
 		
 		switch(answerOnQuestion) {
 		case NO:
-			data.get(0).setValue(data.attribute(Integer.toString(currentQuestion.getIndex() - 1)), 0);
+			data.get(0).setValue(data.attribute(Integer.toString(currentQuestion.getQuestionId() - 1)), 0);
 			break;
 		case YES:
-			data.get(0).setValue(data.attribute(Integer.toString(currentQuestion.getIndex() - 1)), 1);
+			data.get(0).setValue(data.attribute(Integer.toString(currentQuestion.getQuestionId() - 1)), 1);
 			break;
 		case DO_NOT_KNOW:
-			data.get(0).setValue(data.attribute(Integer.toString(currentQuestion.getIndex() - 1)), 2);
+			data.get(0).setValue(data.attribute(Integer.toString(currentQuestion.getQuestionId() - 1)), 2);
 			break;
 		default:
 			break;	

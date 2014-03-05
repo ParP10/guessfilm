@@ -1,37 +1,67 @@
 package guessFilm;
 
-/**
- * 
- * Class for working with database
- *
- */
+import java.util.ArrayList;
+
+import org.hibernate.Session;
+
+import guessFilm.model.Film;
+import guessFilm.model.Question;
+import guessFilm.utils.HibernateUtil;
+
+
 public class DataBase {
 
-	public DataBase() {
-		
+	public Long addFilm(Film film) {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		session.beginTransaction();
+		Long result = (Long) session.save(film);
+		session.getTransaction().commit();
+		return result;
 	}
 	
-	/**
-	 * 
-	 * @param id
-	 * @return String representation of film
-	 */
-	// XXX Why not to return Film instance here?
-	public String selectFilmName(int id) {
-		// TODO Select from database Film's name 
-		return null;
+	public Film getFilm(int filmId) {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		session.beginTransaction();
+		Film result = (Film) session.load(Film.class, filmId);
+		session.getTransaction().commit();
+		return result;
 	}
-
-	/**
-	 * 
-	 * @param id
-	 * @return String representation of question
-	 */
-	// XXX Why not to return Question instance here?
-	public String selectQuestionName(int id) {
-		// TODO Select from database Question's name 
-		return null;
+	
+	 public ArrayList<Film> findFilm() {
+	    Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+	    session.beginTransaction();
+	    
+		@SuppressWarnings("unchecked")
+		ArrayList<Film> result = (ArrayList<Film>) session.createQuery("from films").list();
+	    session.getTransaction().commit();
+	    return result;
+	 }
+	
+	public Long addQuestion(Question question) {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		session.beginTransaction();
+		Long result = (Long) session.save(question);
+		session.getTransaction().commit();
+		return result;
 	}
+	
+	public Question getQuestion(int questionId) {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		session.beginTransaction();
+		Question result = (Question) session.load(Film.class, questionId);
+		session.getTransaction().commit();
+		return result;
+	}	
+	
+	 public ArrayList<Question> findQuestion() {
+	    Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+	    session.beginTransaction();
+	    
+		@SuppressWarnings("unchecked")
+		ArrayList<Question> result = (ArrayList<Question>) session.createQuery("from questions").list();
+	    session.getTransaction().commit();
+	    return result;
+	 }
 
 }
 
