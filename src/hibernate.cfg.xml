@@ -9,7 +9,7 @@
  
       <!-- Database connection settings -->
         <property name="connection.driver_class">com.microsoft.sqlserver.jdbc.SQLServerDriver</property>
-        <property name="connection.url">jdbc:sqlserver://localhost/guessFilm</property>
+        <property name="connection.url">jdbc:sqlserver://localhost\SQL;databaseName=guessFilm</property>
         <property name="connection.username">sa</property>
         <property name="connection.password">12345678</property>
  
@@ -31,6 +31,7 @@
       <!-- Mapping files -->
         <mapping class="guessFilm.model.Film"/>
         <mapping class="guessFilm.model.Question"/>
+        <mapping class="guessFilm.model.Sample"/>
  
     </session-factory>
  

@@ -6,6 +6,8 @@ import guessFilm.model.Film;
 import guessFilm.model.Films;
 import guessFilm.model.Question;
 import guessFilm.model.Questions;
+import guessFilm.model.Sample;
+import guessFilm.model.Samples;
 
 /**
  * 
@@ -15,7 +17,7 @@ import guessFilm.model.Questions;
 public class GuessFilm {
 
 	public enum Mode {
-		TRAINING_MODE, GUESS_MODE, APPEND_NEW_QUESTIONS, APPEND_NEW_FILMS;
+		TRAINING_MODE, GUESS_MODE, APPEND_NEW_QUESTIONS, APPEND_NEW_FILMS, APPEND_NEW_SAMPLES;
 	};
 
 	public enum AnswerOnQuestion {
@@ -25,6 +27,7 @@ public class GuessFilm {
 	private Films films = new Films();
 	private Questions questions = new Questions();
 	private UserInterface user = new UserInterface();
+	DataBase dao = new DataBase();
 
 	/**
 	 * Program start here
@@ -33,10 +36,9 @@ public class GuessFilm {
 
 	public static void main(String[] args) throws Exception {
 		GuessFilm guessFilm = new GuessFilm();
-		DataBase dao = new DataBase();
 
-		guessFilm.films.initialize(dao.findFilm());
-		guessFilm.questions.initialize(dao.findQuestion());
+		guessFilm.films.initialize(guessFilm.dao.findFilm());
+		guessFilm.questions.initialize(guessFilm.dao.findQuestion());
 
 		/*
 		 * Choose mode
@@ -54,11 +56,14 @@ public class GuessFilm {
 			case APPEND_NEW_FILMS:
 				guessFilm.films.appendNewFilms();
 				break;
+			case APPEND_NEW_SAMPLES:
+				guessFilm.addSamples();
 			default:
 				break;
 		}
-
+		System.out.println("End!");
 	}
+
 
 	private void guess() throws Exception {
 
@@ -75,6 +80,8 @@ public class GuessFilm {
 		classifier.loadModel(classifierType);
 		classifier.createAttributes(questions.getAmountQuestions(), films.getAmountFilms());
 		classifier.createFeatureVector();
+		
+		Samples samples = new Samples();
 	
 		/*
 		 * While there is question and user does't stop program - ask question
@@ -93,7 +100,17 @@ public class GuessFilm {
 			if (answerOnQuestion == AnswerOnQuestion.CLOSE) {
 				break;
 			}
-			classifier.addFeature(currentQuestion, answerOnQuestion);
+			if (answerOnQuestion != AnswerOnQuestion.DO_NOT_KNOW) {
+				classifier.addFeature(currentQuestion, answerOnQuestion);
+			}
+			/*
+			 * Add new sample
+			 */
+			Sample currentSample = new Sample();
+			currentSample.setQuestionId(currentQuestion.getQuestionId());
+			currentSample.setAnswer(answerOnQuestion.ordinal());
+			samples.addSample(currentSample);
+			
 			/*
 			 * Classification
 			 */
@@ -105,15 +122,18 @@ public class GuessFilm {
 		}
 
 		/*
-		 * If user says right answer, train classifier
+		 * If user says right answer, save sample
 		 */
-		/*if (user.giveTrueAnswer()) {
-			Film trueFilm = new Film();
-			trueFilm = user.trueFilm();
-			classifier.addAnswer(trueFilm);
-			classifier.train();
-			classifier.saveModel();
-		}*/
+		if (user.giveTrueAnswer()) {
+			int id = user.trueFilm();
+			Sample curSample = new Sample();
+			for (int i = 0; i < samples.size(); i++) {
+				curSample = samples.getSample(i);
+				curSample.setFilmId(id);
+				dao.addSample(curSample);
+			}
+			
+		}
 	}
 
 	private void train() throws Exception {
@@ -125,7 +145,9 @@ public class GuessFilm {
 		
 		classifier.createAttributes(questions.getAmountQuestions(), films.getAmountFilms());
 		
-		classifier.loadData();
+		Samples samples = new Samples();
+		samples.initialize(dao.findSample());
+		classifier.loadData(samples);
 		
 		classifier.train();
 		
@@ -136,6 +158,16 @@ public class GuessFilm {
 
 	private Mode modeSelection() {
 		return user.getMode();
+	}
+	
+	private void addSamples() {
+		Samples samples = new Samples();
+		samples.appendNewSamples();
+		
+		for (int i = 0; i < samples.size(); i++) {
+			dao.addSample(samples.getSample(i));
+		}
+		
 	}
 
 }

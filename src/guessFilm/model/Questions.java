@@ -90,6 +90,7 @@ public class Questions {
 	 * @return Question with ID = idQuestion
 	 */
 	public Question getQuestion(int idQuestion) {
+		//TODO Optimize here
 		return listQuestions.get(idQuestion);
 	}
 
@@ -161,7 +162,7 @@ public class Questions {
 		// TODO realize algorithm
 
 		amountAskedQuestions++;
-		curQuestion.setUsed();
+		//curQuestion.setUsed();
 		return curQuestion;
 	}
 

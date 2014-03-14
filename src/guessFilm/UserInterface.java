@@ -1,5 +1,6 @@
 package guessFilm;
 
+import guessFilm.GuessFilm.AnswerOnQuestion;
 import guessFilm.model.Film;
 import guessFilm.model.Question;
 
@@ -38,18 +39,18 @@ public class UserInterface {
 	/**
 	 * Get answer on the question from user
 	 */
-	public GuessFilm.AnswerOnQuestion getAnswerOnQuestion() {
+	public AnswerOnQuestion getAnswerOnQuestion() {
 		Scanner in = new Scanner(System.in);
 		String s = in.next();
 		if (s.equals("y")) {
-			return GuessFilm.AnswerOnQuestion.YES;
+			return AnswerOnQuestion.YES;
 		} else if (s.equals("n")) {
-			return GuessFilm.AnswerOnQuestion.NO;
+			return AnswerOnQuestion.NO;
 		} else if (s.equals("d")) {
-			return GuessFilm.AnswerOnQuestion.DO_NOT_KNOW;
+			return AnswerOnQuestion.DO_NOT_KNOW;
 		}
 		changeFlag(true);
-		return GuessFilm.AnswerOnQuestion.CLOSE;
+		return AnswerOnQuestion.CLOSE;
 	}
 	
 	/**
@@ -64,16 +65,21 @@ public class UserInterface {
 	 * Is user give true film's name?
 	 */
 	public boolean giveTrueAnswer() {
-		// TODO Auto-generated method stub
+		System.out.println("Do you now right film?");
+		AnswerOnQuestion answer = getAnswerOnQuestion();
+		if (answer == AnswerOnQuestion.YES) {
+			return true;
+		}
 		return false;
 	}
 	
 	/**
 	 * Get true film from user
 	 */
-	public Film trueFilm() {
-		// TODO Auto-generated method stub
-		return null;
+	public int trueFilm() {
+		System.out.println("Please, write film's Id");
+		Scanner in = new Scanner(System.in);
+		return in.nextInt();
 	}
 	
 	/**
@@ -85,6 +91,7 @@ public class UserInterface {
 		System.out.println("2 - training mode");
 		System.out.println("3 - add questions in database");
 		System.out.println("4 - add films in database");
+		System.out.println("5 - add samples in database from file");
 		
 		Scanner in = new Scanner(System.in);
 		int mode = in.nextInt();
@@ -97,6 +104,8 @@ public class UserInterface {
 			return GuessFilm.Mode.APPEND_NEW_QUESTIONS;
 		case 4:
 			return GuessFilm.Mode.APPEND_NEW_FILMS;
+		case 5:
+			return GuessFilm.Mode.APPEND_NEW_SAMPLES;
 		default:
 			System.out.println("Wrong input");
 			break;

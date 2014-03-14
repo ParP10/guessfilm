@@ -1,8 +1,6 @@
 package guessFilm;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 import weka.classifiers.Classifier;
 import weka.classifiers.bayes.NaiveBayes;
@@ -13,6 +11,7 @@ import weka.core.Instances;
 import weka.core.SerializationHelper;
 import guessFilm.model.Film;
 import guessFilm.model.Question;
+import guessFilm.model.Samples;
 
 /**
  * 
@@ -79,9 +78,21 @@ public class Learning {
 		attributes.add(new Attribute("Result", filmAnswers));
 	}
 	
-	public void loadData() throws Exception {
+	public void loadData(Samples samples) throws Exception {
 		data = new Instances("rel", attributes, 0);
 		
+		for (int i = 0; i < samples.size(); i++) {
+			Instance inst = new DenseInstance(data.numAttributes());
+			inst.setDataset(data);
+			
+			inst.setValue(samples.getSample(i).getQuestionId() - 1, samples.getSample(i).getAnswer());//
+			inst.setValue(data.numAttributes() - 1, samples.getSample(i).getFilmId());
+			data.add(inst);
+		}
+		
+		data.setClassIndex(data.numAttributes() - 1);
+		//Old version
+		/*
 		Scanner scanner = new Scanner(new File("trainset.txt"), "UTF-8");
 		
 		int numInstances = scanner.nextInt();
@@ -92,37 +103,21 @@ public class Learning {
 			inst.setDataset(data);
 			
 			for (int j = 0; j < oldNumAttributes; j++) {
-				/*
-				 * NO = 0
-				 * YES = 1
-				 * DO NOT KNOW = 2
-				 * NULL = 3
-				 */
+				
+				 //NO = 0
+				  //YES = 1
+				  //DO NOT KNOW = 2
+				  //NULL = 3
+				 
 				int value = scanner.nextInt();
 				inst.setValue(j, value);
-				/*if (j == oldNumAttributes - 1) {
-					inst.setValue(j, value);
-				} else {
-					switch(value) {
-					case 0:
-						inst.setValue(j, 0);
-						break;
-					case 1:
-						inst.setValue(j, 1);
-						break;
-					case 2:
-						inst.setValue(j, 2);
-						break;
-					default:
-						break;
-					}
-				}*/
 			}
 			
 			data.add(inst);
 		}
 		
 		data.setClassIndex(data.numAttributes() - 1);
+		*/
 	}
 	
 	

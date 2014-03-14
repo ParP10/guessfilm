@@ -52,6 +52,7 @@ public class Films {
 	 * @return Film with ID = idFilm
 	 */
 	public Film getFilm(int idFilm) {
+		// TODO Optimize here
 		return listFilms.get(idFilm - 1);
 	}
 	
@@ -75,8 +76,9 @@ public class Films {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 			try {
 				String line = reader.readLine();
+				int i = 0;
 				while (line != null) {
-					
+					System.out.println(i++ + line);
 					Film newFilm = new Film(line);
 					listFilms.add(newFilm);
 					amountFilms++;
