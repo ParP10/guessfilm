@@ -1,0 +1,96 @@
+<!DOCTYPE web-app PUBLIC '-//Sun Microsystems, Inc.//DTD
+  Web Application 2.3//EN' 'http://java.sun.com/dtd/web-app_2_3.dtd'>
+ 
+<web-app>
+ 
+  <servlet>
+    <servlet-name>main</servlet-name>
+    <servlet-class>guessFilm.web.MainFrameServlet</servlet-class>
+  </servlet>
+  
+  <servlet>
+    <servlet-name>guessFilm</servlet-name>
+    <servlet-class>guessFilm.web.GuessFilmServlet</servlet-class>
+  </servlet>
+  
+  <servlet>
+    <servlet-name>train</servlet-name>
+    <servlet-class>guessFilm.web.TrainServlet</servlet-class>
+  </servlet>
+  
+  <servlet>
+    <servlet-name>newFilm</servlet-name>
+    <servlet-class>guessFilm.web.FilmServlet</servlet-class>
+  </servlet>
+  
+  <servlet>
+    <servlet-name>newQuestion</servlet-name>
+    <servlet-class>guessFilm.web.QuestionServlet</servlet-class>
+  </servlet>
+  
+  <servlet>
+    <servlet-name>newSample</servlet-name>
+    <servlet-class>guessFilm.web.SampleServlet</servlet-class>
+  </servlet>
+  
+  <servlet>
+    <servlet-name>final</servlet-name>
+    <servlet-class>guessFilm.web.LastPageServlet</servlet-class>
+  </servlet>
+  
+  <servlet>
+    <servlet-name>result</servlet-name>
+    <servlet-class>guessFilm.web.ResultServlet</servlet-class>
+  </servlet>
+  
+  <servlet>
+    <servlet-name>true_film</servlet-name>
+    <servlet-class>guessFilm.web.GetFilmServlet</servlet-class>
+  </servlet>
+ 
+  <servlet-mapping>
+    <servlet-name>main</servlet-name>
+    <url-pattern>/main</url-pattern>
+  </servlet-mapping>
+ 
+  <servlet-mapping>
+    <servlet-name>guessFilm</servlet-name>
+    <url-pattern>/guess_film</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>train</servlet-name>
+    <url-pattern>/train</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>newFilm</servlet-name>
+    <url-pattern>/new_film</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>newQuestion</servlet-name>
+    <url-pattern>/new_question</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>newSample</servlet-name>
+    <url-pattern>/new_sample</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>final</servlet-name>
+    <url-pattern>/final</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>result</servlet-name>
+    <url-pattern>/result</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>true_film</servlet-name>
+    <url-pattern>/true_film</url-pattern>
+  </servlet-mapping>
+  
+</web-app>

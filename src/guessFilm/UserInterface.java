@@ -28,7 +28,7 @@ public class UserInterface {
 	 * Print question on display
 	 */
 	public void printQuestion(Question question) {
-		System.out.println(question.getQuestionName());
+		System.out.println(question.getName());
 		
 	}
 	
@@ -57,7 +57,7 @@ public class UserInterface {
 	 * Print film's name on display
 	 */
 	public void printFilm(Film film) {
-		System.out.println(film.getFilmName());
+		System.out.println(film.getName());
 		
 	}
 	

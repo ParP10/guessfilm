@@ -24,10 +24,16 @@ public class GuessFilm {
 		NO, YES, DO_NOT_KNOW, CLOSE; // CLOSE - for testing
 	};
 
-	private Films films = new Films();
-	private Questions questions = new Questions();
-	private UserInterface user = new UserInterface();
+	Films films = new Films();
+	Questions questions = new Questions();
+	UserInterface user = new UserInterface();
 	DataBase dao = new DataBase();
+	Learning classifier = new Learning();
+	Samples samples = new Samples();
+	
+	public GuessFilm() {
+		
+	}
 
 	/**
 	 * Program start here
@@ -35,14 +41,12 @@ public class GuessFilm {
 	 */
 
 	public static void main(String[] args) throws Exception {
+		
 		GuessFilm guessFilm = new GuessFilm();
 
 		guessFilm.films.initialize(guessFilm.dao.findFilm());
 		guessFilm.questions.initialize(guessFilm.dao.findQuestion());
 
-		/*
-		 * Choose mode
-		 */
 		switch (guessFilm.modeSelection()) {
 			case TRAINING_MODE:
 				guessFilm.train();
@@ -65,7 +69,7 @@ public class GuessFilm {
 	}
 
 
-	private void guess() throws Exception {
+	public void guess() throws Exception {
 
 		/*
 		 * Choose classifier
@@ -81,7 +85,7 @@ public class GuessFilm {
 		classifier.createAttributes(questions.getAmountQuestions(), films.getAmountFilms());
 		classifier.createFeatureVector();
 		
-		Samples samples = new Samples();
+		//Samples samples = new Samples();
 	
 		/*
 		 * While there is question and user does't stop program - ask question
@@ -107,7 +111,7 @@ public class GuessFilm {
 			 * Add new sample
 			 */
 			Sample currentSample = new Sample();
-			currentSample.setQuestionId(currentQuestion.getQuestionId());
+			currentSample.setQuestionId(currentQuestion.getId());
 			currentSample.setAnswer(answerOnQuestion.ordinal());
 			samples.addSample(currentSample);
 			
@@ -135,8 +139,8 @@ public class GuessFilm {
 			
 		}
 	}
-
-	private void train() throws Exception {
+/* Old version
+	public void train() throws Exception {
 		
 		// Choose and create classifier
 		ClassifierType classifierType = ClassifierType.NAIVE_BAYES;
@@ -154,13 +158,31 @@ public class GuessFilm {
 		classifier.saveModel();
 		
 	}
+*/
+	public void train() throws Exception {
+		
+		// Choose and create classifier
+		ClassifierType classifierType = ClassifierType.NAIVE_BAYES;
+		//Learning classifier = new Learning();
+		classifier.createModel(classifierType);
+		System.out.println("AMOUNT QUESTIONS:   " + questions.getAmountQuestions());
+		classifier.createAttributes(questions.getAmountQuestions(), films.getAmountFilms());
+		
+		Samples samples = new Samples();
+		samples.initialize(dao.findSample());
+		classifier.loadData(samples);
+		
+		classifier.train();
+		
+		classifier.saveModel();
+		
+	}
 
-
-	private Mode modeSelection() {
+	public Mode modeSelection() {
 		return user.getMode();
 	}
 	
-	private void addSamples() {
+	public void addSamples() {
 		Samples samples = new Samples();
 		samples.appendNewSamples();
 		
@@ -168,6 +190,79 @@ public class GuessFilm {
 			dao.addSample(samples.getSample(i));
 		}
 		
+	}
+
+
+	public void appendNewQuestion(String name) {
+		questions.appendNewQuestion(name);
+	}
+
+
+	public void appendNewFilm(String name) {
+		films.appendNewFilm(name);
+	}
+
+	public void guessInit() throws Exception {
+		films.initialize(dao.findFilm());
+		questions.initialize(dao.findQuestion());
+		
+		ClassifierType classifierType = ClassifierType.NAIVE_BAYES;
+		classifier.loadModel(classifierType);
+		classifier.createAttributes(questions.getAmountQuestions(), films.getAmountFilms());
+		classifier.createFeatureVector();
+	}
+
+	public Question getNextQuestion() {
+		return questions.getNextQuestion();
+	}
+
+	public void quess(Question question, AnswerOnQuestion answerOnQuestion) {
+		if (answerOnQuestion != AnswerOnQuestion.DO_NOT_KNOW) {
+			classifier.addFeature(question, answerOnQuestion);
+		}
+		Sample currentSample = new Sample();
+		currentSample.setQuestionId(question.getId());
+		currentSample.setAnswer(answerOnQuestion.ordinal());
+		samples.addSample(currentSample);
+	}
+
+	public Film getCurrentFilm() throws Exception {
+		return films.getFilm(classifier.classify());
+	}
+
+	public void saveSamples(Film resultFilm) {
+		Sample curSample = new Sample();
+		for (int i = 0; i < samples.size(); i++) {
+			curSample = samples.getSample(i);
+			curSample.setFilmId(resultFilm.getId());
+			dao.addSample(curSample);
+		}
+	}
+
+	public void setTrueFilm(String filmName) {
+		// TODO optimize this algorithm
+		System.out.println("On setTrueFilm");
+		for (int i = 1; i <= films.getAmountFilms(); i++) {
+			System.out.println("iteration" + i);
+			if (films.getFilm(i).getName().equals(filmName)) {
+				saveSamples(films.getFilm(i));
+				return;
+			}
+		}
+		System.out.println("After cycle");
+		films.appendNewFilm(filmName);
+		Film film = new Film();
+		film = films.getFilm(films.getAmountFilms());
+		saveSamples(film);
+		System.out.println("At the end of function");
+	}
+
+	public void clearQuestionHistory() {
+		questions.setAmountAskedQuestions(0);
+	}
+
+	public void removeSamples() {
+		samples.clear();
 	}
 
 }

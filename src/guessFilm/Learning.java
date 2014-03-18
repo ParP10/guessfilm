@@ -42,15 +42,11 @@ public class Learning {
 		
 	}
 
-	public void loadModel(ClassifierType classifierType) {
+	public void loadModel(ClassifierType classifierType) throws Exception {
 		switch (classifierType) {
 		case NAIVE_BAYES:
 			// Deserializing a classifier
-			try {
 				cls = (Classifier) SerializationHelper.read("naive_bayes.model");
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
 			break;
 		default:
 			break;
@@ -80,11 +76,13 @@ public class Learning {
 	
 	public void loadData(Samples samples) throws Exception {
 		data = new Instances("rel", attributes, 0);
+		System.out.println(samples.size());
 		
 		for (int i = 0; i < samples.size(); i++) {
 			Instance inst = new DenseInstance(data.numAttributes());
 			inst.setDataset(data);
-			
+			System.out.println(samples.getSample(i).getQuestionId() - 1);
+			System.out.println(samples.getSample(i).getAnswer());
 			inst.setValue(samples.getSample(i).getQuestionId() - 1, samples.getSample(i).getAnswer());//
 			inst.setValue(data.numAttributes() - 1, samples.getSample(i).getFilmId());
 			data.add(inst);
@@ -143,13 +141,13 @@ public class Learning {
 		
 		switch(answerOnQuestion) {
 		case NO:
-			data.get(0).setValue(data.attribute(Integer.toString(currentQuestion.getQuestionId() - 1)), 0);
+			data.get(0).setValue(data.attribute(Integer.toString(currentQuestion.getId() - 1)), 0);
 			break;
 		case YES:
-			data.get(0).setValue(data.attribute(Integer.toString(currentQuestion.getQuestionId() - 1)), 1);
+			data.get(0).setValue(data.attribute(Integer.toString(currentQuestion.getId() - 1)), 1);
 			break;
 		case DO_NOT_KNOW:
-			data.get(0).setValue(data.attribute(Integer.toString(currentQuestion.getQuestionId() - 1)), 2);
+			data.get(0).setValue(data.attribute(Integer.toString(currentQuestion.getId() - 1)), 2);
 			break;
 		default:
 			break;	

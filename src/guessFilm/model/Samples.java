@@ -56,4 +56,8 @@ public class Samples {
 		
 	}
 
+	public void clear() {
+		listSamples.clear();
+	}
+
 }

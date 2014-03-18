@@ -109,10 +109,14 @@ public class Films {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}*/
-		
-		
-		
-		
+	}
+
+	public void appendNewFilm(String name) {
+		DataBase dao = new DataBase();
+		Film newFilm = new Film(name);
+		listFilms.add(newFilm);
+		amountFilms++;
+		dao.addFilm(newFilm);
 	}
 
 }

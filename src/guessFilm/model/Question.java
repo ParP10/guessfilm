@@ -52,19 +52,19 @@ public class Question {
 		this.name = name;
 	}
 
-	public int getQuestionId() {
+	public int getId() {
 		return id;
 	}
 
-	public void setQuestionId(int id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 
-	public String getQuestionName() {
+	public String getName() {
 		return name;
 	}
 
-	public void setQuestionName(String name) {
+	public void setName(String name) {
 		this.name = name;
 	}
 

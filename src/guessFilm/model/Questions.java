@@ -157,6 +157,9 @@ public class Questions {
 	 * next question
 	 */
 	public Question getNextQuestion() {
+		if(!existsQuestion()) {
+			return null;
+		}
 		Question curQuestion = listQuestions.get(amountAskedQuestions);
 
 		// TODO realize algorithm
@@ -164,6 +167,14 @@ public class Questions {
 		amountAskedQuestions++;
 		//curQuestion.setUsed();
 		return curQuestion;
+	}
+
+	public void appendNewQuestion(String name) {
+		DataBase dao = new DataBase();
+		Question newQuestion = new Question(name);
+		listQuestions.add(newQuestion);
+		amountQuestions++;
+		dao.addQuestion(newQuestion);
 	}
 
 }

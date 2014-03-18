@@ -26,6 +26,8 @@ public class Film {
 	private String name;
 	
 	public Film() {	
+		id = 0;
+		name = "";
 	}
 	
 	public Film(int id, String name) {
@@ -37,19 +39,19 @@ public class Film {
 		this.name = name;
 	}
 	
-	public int getFilmId() {
+	public int getId() {
 		return id;
 	}
 
-	public void setFilmId(int id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 
-	public String getFilmName() {
+	public String getName() {
 		return name;
 	}
 
-	public void setFilmName(String name) {
+	public void setName(String name) {
 		this.name = name;
 	}
 
