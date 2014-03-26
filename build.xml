@@ -1,0 +1,83 @@
+<project name="guessfilm" default="web" basedir=".">
+	<description>
+        Guess-Film demo prototype
+    </description>
+	<property name="src" location="src" />
+	<property name="web.src" location="websrc" />
+	<property name="build" location="build" />
+	<property name="dist" location="dist" />
+	<property name="lib" location="lib" />
+	<property name="web.dir" location="WEB-INF" />
+
+	<property name="war.main" value="guessfilm.war" />
+	<property name="dist.main" value="guessfilm.jar" />
+
+	<path id="classpath">
+		<fileset dir="${lib}">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+
+	<target name="clean">
+		<delete dir="${build}" />
+		<delete dir="${dist}" />
+		<delete dir="${web.lib.dir}" />
+	</target>
+
+	<target name="init">
+		<!-- Create the build directory structure used by compile -->
+		<mkdir dir="${build}" />
+	</target>
+
+	<!-- SECTION: compile -->
+	<macrodef name="compile">
+		<attribute name="debug" default="off" />
+		<sequential>
+			<javac compiler="modern" srcdir="${src}" destdir="${build}" debug="@{debug}" encoding="UTF-8" includeAntRuntime="false">
+				<classpath refid="classpath" />
+				<compilerarg value="-Xlint:all" />
+				<compilerarg value="-Xlint:-path" />
+			</javac>
+		</sequential>
+	</macrodef>
+
+	<target name="compile" depends="init">
+		<compile />
+	</target>
+
+	<target name="compile.debug" depends="init">
+		<compile debug="on" />
+	</target>
+
+	<macrodef name="web">
+		<sequential>
+			<war destfile="${dist}/${war.main}" encoding="utf-8" needxmlfile="false">
+				<lib dir="${lib}">
+					<include name="*.jar" />
+				</lib>
+				<lib dir="${dist}">
+					<include name="${dist.main}" />
+				</lib>
+				<fileset dir="${web.src}">
+					<include name="*.jsp" />
+				</fileset>
+				<webinf dir="${web.dir}" />
+			</war>
+		</sequential>
+	</macrodef>
+
+	<macrodef name="dist">
+		<sequential>
+			<jar jarfile="${dist}/${dist.main}" basedir="${build}" />
+		</sequential>
+	</macrodef>
+
+	<target name="dist" depends="compile">
+		<dist />
+	</target>
+
+	<target name="web" depends="dist">
+		<web />
+	</target>
+
+</project>
