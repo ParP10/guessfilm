@@ -9,7 +9,7 @@
 	</head>
 	
 	<body>
-		<form action="http://localhost:8080/GuessFilm/true_film" method=POST>
+		<form action="true_film" method=POST>
 		<H1>
 			Введите, пожалуйста, правильный фильм:
 		</H1>

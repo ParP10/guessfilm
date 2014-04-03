@@ -11,7 +11,7 @@
 	</head>
 	
 	<body>
-		<form action="http://localhost:8080/GuessFilm/result" method=POST>
+		<form action="result" method=POST>
 		<H1>
 			Результат:
 		</H1>

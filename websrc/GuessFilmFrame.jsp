@@ -13,7 +13,7 @@
 	</head>
 	
 	<body>
-		<form action="http://localhost:8080/GuessFilm/guess_film" method=POST>
+		<form action="guess_film" method=POST>
 		<%  question = (Question) request.getAttribute("question"); %>
 		<% if (question != null) { %>
 		<H1>

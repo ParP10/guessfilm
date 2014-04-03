@@ -8,7 +8,7 @@
 	</head>
 	
 	<body>
-		<form action="http://localhost:8080/GuessFilm/new_sample" method=POST>
+		<form action="new_sample" method=POST>
 		<table>
 			<tr>
 				<td><input type="color" name="1"/></td>		

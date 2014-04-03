@@ -8,7 +8,7 @@
 	</head>
 	
 	<body>
-		<form action="http://localhost:8080/GuessFilm/final" method=POST>
+		<form action="final" method=POST>
 		<H1>
 			Все операции прошли успешно. Нажмите на кнопку для возвращения на главную страницу
 		</H1>

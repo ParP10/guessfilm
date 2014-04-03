@@ -8,7 +8,7 @@
 	</head>
 	
 	<body>
-		<form action="http://localhost:8080/GuessFilm/main" method=POST>
+		<form action="main" method="POST">
 		<H1>
 			Выберите режим работы
 		</H1>

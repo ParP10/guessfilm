@@ -9,7 +9,7 @@
 	</head>
 	
 	<body>
-		<form action="http://localhost:8080/GuessFilm/train" method=POST>
+		<form action="train" method=POST>
 		<H1>
 			Обучение прошло успешно. Нажмите на кнопку для возвращения на главную страницу
 		</H1>
