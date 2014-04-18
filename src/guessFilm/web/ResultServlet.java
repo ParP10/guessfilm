@@ -18,6 +18,7 @@ public class ResultServlet extends HttpServlet{
 		req.setCharacterEncoding("UTF-8");
 		if (req.getParameter("yes") != null) {
 			guessFilm.saveSamples(resultFilm);
+			guessFilm.updateStat(resultFilm);
 			LastPageServlet lastPageServlet = new LastPageServlet();
 			lastPageServlet.saveGuessFilm(guessFilm);
 			getServletContext().getRequestDispatcher("/LastPageFrame.jsp").forward(req, resp);

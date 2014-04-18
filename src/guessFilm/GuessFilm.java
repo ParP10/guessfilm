@@ -1,9 +1,13 @@
 package guessFilm;
 
+import java.util.ArrayList;
+
 import guessFilm.Learning.ClassifierType;
 import guessFilm.model.Film;
-//import javax.jws.WebParam.Mode;
 import guessFilm.model.Films;
+import guessFilm.model.NegativeAnswers;
+import guessFilm.model.Pair;
+import guessFilm.model.PositiveAnswers;
 import guessFilm.model.Question;
 import guessFilm.model.Questions;
 import guessFilm.model.Sample;
@@ -25,7 +29,7 @@ public class GuessFilm {
 	};
 
 	Films films = new Films();
-	Questions questions = new Questions();
+	Questions questions = new Questions(films);
 	UserInterface user = new UserInterface();
 	DataBase dao = new DataBase();
 	Learning classifier = new Learning();
@@ -80,7 +84,7 @@ public class GuessFilm {
 		/*
 		 * Set classifier and load model
 		 */
-		Learning classifier = new Learning();
+		//Learning classifier = new Learning();
 		classifier.loadModel(classifierType);
 		classifier.createAttributes(questions.getAmountQuestions(), films.getAmountFilms());
 		classifier.createFeatureVector();
@@ -90,17 +94,18 @@ public class GuessFilm {
 		/*
 		 * While there is question and user does't stop program - ask question
 		 */
+		AnswerOnQuestion answerOnQuestion = null;
 		while (questions.existsQuestion() && !user.stopProgram()) {
 			/*
 			 * Ask question
 			 */
 			Question currentQuestion = new Question();
-			currentQuestion = questions.getNextQuestion();
+			currentQuestion = questions.getNextQuestion(answerOnQuestion);
 			user.printQuestion(currentQuestion);
 			/*
 			 * Answer question
 			 */
-			AnswerOnQuestion answerOnQuestion = user.getAnswerOnQuestion();
+			answerOnQuestion = user.getAnswerOnQuestion();
 			if (answerOnQuestion == AnswerOnQuestion.CLOSE) {
 				break;
 			}
@@ -161,16 +166,14 @@ public class GuessFilm {
 */
 	public void train() throws Exception {
 		
-		// Choose and create classifier
-		ClassifierType classifierType = ClassifierType.NAIVE_BAYES;
-		//Learning classifier = new Learning();
-		classifier.createModel(classifierType);
-		System.out.println("AMOUNT QUESTIONS:   " + questions.getAmountQuestions());
 		classifier.createAttributes(questions.getAmountQuestions(), films.getAmountFilms());
 		
 		Samples samples = new Samples();
 		samples.initialize(dao.findSample());
 		classifier.loadData(samples);
+		
+		ClassifierType classifierType = ClassifierType.NAIVE_BAYES;
+		classifier.createModel(classifierType);
 		
 		classifier.train();
 		
@@ -194,12 +197,40 @@ public class GuessFilm {
 
 
 	public void appendNewQuestion(String name) {
-		questions.appendNewQuestion(name);
+		int newId = questions.appendNewQuestion(name);
+		
+		for (int i = 0; i < films.getAmountFilms(); i++) {
+			PositiveAnswers positiveAnswers = new PositiveAnswers();
+			positiveAnswers.setFilmId(i + 1);
+			positiveAnswers.setQuestionId(newId);
+			positiveAnswers.setCount(0);
+			dao.addPositiveAnswers(positiveAnswers);
+			
+			NegativeAnswers negativeAnswers = new NegativeAnswers();
+			negativeAnswers.setFilmId(i + 1);
+			negativeAnswers.setQuestionId(newId);
+			negativeAnswers.setCount(0);
+			dao.addNegativeAnswers(negativeAnswers);
+		}
 	}
 
 
 	public void appendNewFilm(String name) {
-		films.appendNewFilm(name);
+		int newId = films.appendNewFilm(name);
+		
+		for (int i = 0; i < questions.getAmountQuestions(); i++) {
+			PositiveAnswers positiveAnswers = new PositiveAnswers();
+			positiveAnswers.setQuestionId(i + 1);
+			positiveAnswers.setFilmId(newId);
+			positiveAnswers.setCount(0);
+			dao.addPositiveAnswers(positiveAnswers);
+			
+			NegativeAnswers negativeAnswers = new NegativeAnswers();
+			negativeAnswers.setQuestionId(i + 1);
+			negativeAnswers.setFilmId(newId);
+			negativeAnswers.setCount(0);
+			dao.addNegativeAnswers(negativeAnswers);
+		}
 	}
 
 	public void guessInit() throws Exception {
@@ -212,8 +243,8 @@ public class GuessFilm {
 		classifier.createFeatureVector();
 	}
 
-	public Question getNextQuestion() {
-		return questions.getNextQuestion();
+	public Question getNextQuestion(AnswerOnQuestion answerOnQuestion) {
+		return questions.getNextQuestion(answerOnQuestion);
 	}
 
 	public void quess(Question question, AnswerOnQuestion answerOnQuestion) {
@@ -229,6 +260,19 @@ public class GuessFilm {
 	public Film getCurrentFilm() throws Exception {
 		return films.getFilm(classifier.classify());
 	}
+	
+	public ArrayList< Pair<Film, Double> > getDistributionTopN(int n) throws Exception {
+		//return classifier.getDistributionTopN(n);
+		ArrayList <Pair<Integer, Double> > distrib = classifier.getDistributionTopN(n);
+		ArrayList <Pair<Film, Double> > result = new ArrayList<Pair<Film, Double> >();
+		for (int i = 0; i < 20; i++) {
+			Film film = films.getFilm(distrib.get(i).getFirst());
+			result.add(new Pair<Film, Double>(film, distrib.get(i).getSecond()));
+			System.out.println(result.get(i).getFirst().getName());
+			System.out.println(result.get(i).getSecond());
+		}
+		return result;
+	}
 
 	public void saveSamples(Film resultFilm) {
 		Sample curSample = new Sample();
@@ -241,28 +285,36 @@ public class GuessFilm {
 
 	public void setTrueFilm(String filmName) {
 		// TODO optimize this algorithm
-		System.out.println("On setTrueFilm");
 		for (int i = 1; i <= films.getAmountFilms(); i++) {
-			System.out.println("iteration" + i);
 			if (films.getFilm(i).getName().equals(filmName)) {
 				saveSamples(films.getFilm(i));
 				return;
 			}
 		}
-		System.out.println("After cycle");
 		films.appendNewFilm(filmName);
 		Film film = new Film();
 		film = films.getFilm(films.getAmountFilms());
 		saveSamples(film);
-		System.out.println("At the end of function");
+		
+		updateStat(film);
 	}
 
 	public void clearQuestionHistory() {
-		questions.setAmountAskedQuestions(0);
+		questions.clearAskedQuestions();
 	}
 
 	public void removeSamples() {
 		samples.clear();
 	}
+	
+	public void newClassifier() {
+		classifier.createFeatureVector();
+	}
 
+	public void updateStat(Film resultFilm) {
+		questions.updatePosQuestions(resultFilm);
+		questions.updateNegQuestions(resultFilm);
+		resultFilm.setCount(resultFilm.getCount() + 1);
+		dao.editFilm(resultFilm);
+	}
 }

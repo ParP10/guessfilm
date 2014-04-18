@@ -9,7 +9,9 @@ import weka.core.DenseInstance;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.SerializationHelper;
+
 import guessFilm.model.Film;
+import guessFilm.model.Pair;
 import guessFilm.model.Question;
 import guessFilm.model.Samples;
 
@@ -23,8 +25,8 @@ public class Learning {
 	private Classifier cls;
 	private ArrayList<Attribute> attributes;
 	private Instances data;
-	
 
+	
 	public enum ClassifierType {
 		NAIVE_BAYES;
 		// TODO: add classifier
@@ -39,7 +41,6 @@ public class Learning {
 		default:
 			break;
 		}
-		
 	}
 
 	public void loadModel(ClassifierType classifierType) throws Exception {
@@ -54,7 +55,7 @@ public class Learning {
 	}
 	
 	
-	public void createAttributes(int numQuestions, int numFilms) {
+	public void createAttributes(int numtree, int numFilms) {
 		attributes = new ArrayList<Attribute>();
 		
 		ArrayList<String> questionAnswers = new ArrayList<String>();
@@ -62,7 +63,7 @@ public class Learning {
 		questionAnswers.add("YES");
 		questionAnswers.add("DO NOT KNOW");
 		
-		for (int i = 0; i < numQuestions; i++) {
+		for (int i = 0; i < numtree; i++) {
 			attributes.add(new Attribute(Integer.toString(i), questionAnswers));
 		}
 		
@@ -162,10 +163,69 @@ public class Learning {
 	 */
 
 	public String classify() throws Exception {
-		
 		double res = cls.classifyInstance(data.instance(0));
 		data.instance(0).setClassValue(res);
 		return data.classAttribute().value((int)res);
+	}
+	
+	/**
+	 * Get N films with top probability
+	 */
+	public ArrayList<Pair<Integer, Double> > getDistributionTopN(int n) throws Exception {
+		double [] filmsDistrib = cls.distributionForInstance(data.instance(0));
+		if (n > filmsDistrib.length) {
+			n = filmsDistrib.length;
+		}
+		ArrayList<Pair<Integer, Double> > result = new ArrayList<Pair<Integer, Double> >(n + 1);
+		for (int i = 0; i < filmsDistrib.length; i++) {
+			result.add(new Pair<Integer, Double>(i + 1, filmsDistrib[i + 1]));
+		}
+		return result;
+		/*for (int i = 0; i < filmsDistrib.length; i++) {
+			int j;
+			if (n > i) {
+				for (j = i - 1; j >= 0; j--) {
+					if (result.get(j).getSecond() > filmsDistrib[i]) break;
+				}
+				result.add(new Pair<Integer, Double>(i + 1, filmsDistrib[i]));
+				for (int h = i; h > j + 1; h--) {
+					//result.set(h, result.get(h - 1));
+					result.get(h).setSecond(result.get(h - 1).getSecond());
+					result.get(h).setFirst(result.get(h - 1).getFirst());
+				}
+				result.get(j + 1).setSecond(filmsDistrib[i]);
+				result.get(j + 1).setFirst(i + 1);
+				
+			} else {
+				for (j = n - 1; j >= 0; j--) {
+					if (result.get(j).getSecond() > filmsDistrib[i]) break;
+				}
+				if (j == n - 1) continue;
+				for (int h = n - 1; h > j + 1; h--) {
+					//result.set(h, result.get(h - 1));
+					result.get(h).setSecond(result.get(h - 1).getSecond());
+					result.get(h).setFirst(result.get(h - 1).getFirst());
+				}
+				result.get(j + 1).setSecond(filmsDistrib[i]);
+				result.get(j + 1).setFirst(i + 1);
+			}
+			/*for (j = m - 1; j >= 0; j--) {
+				if (result.get(j).getSecond() > filmsDistrib[i]) break;
+			}
+			if (j == n - 1) continue;
+			if (j == m - 1) {
+				result.add(new Pair<Integer, Double>(i + 1, filmsDistrib[i]));
+				continue;
+			}
+			for (int h = m - 1; h > j + 1; h--) {
+				result.set(h, result.get(h - 1));
+				//result.get(h).setSecond(result.get(h - 1).getSecond());
+				//result.get(h).setIndex(result.get(h - 1).getIndex());
+			}
+			result.get(j + 1).setSecond(filmsDistrib[i]);
+			result.get(j + 1).setFirst(i + 1);*/
+		/*}
+		return result;*/
 	}
 
 
@@ -176,17 +236,6 @@ public class Learning {
 	
 	public void saveModel() throws Exception {
 		SerializationHelper.write("naive_bayes.model", cls);
-	}
-	
-	
-	/**
-	 * Add film's name in the vector of features (for training mode)
-	 * 
-	 * @param trueFilm
-	 */
-	public void addAnswer(Film trueFilm) {
-		// TODO
-
 	}
 
 }

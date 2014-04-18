@@ -1,15 +1,14 @@
 package guessFilm.model;
 
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-@Entity(name = "samples")
-public class Sample {
-
+@Entity(name = "negativeAnswers")
+public class NegativeAnswers {
+	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="id")
@@ -21,43 +20,38 @@ public class Sample {
 	@Column(name = "questionId")
 	private int questionId;
 	
-	@Column(name = "answer")
-	private int answer;
-	/**
-	 * @return the filmId
-	 */
+	@Column(name = "count")
+	private long count;
+
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
+	}
+
 	public int getFilmId() {
 		return filmId;
 	}
-	/**
-	 * @param filmId the filmId to set
-	 */
+
 	public void setFilmId(int filmId) {
 		this.filmId = filmId;
 	}
-	/**
-	 * @return the questionId
-	 */
+
 	public int getQuestionId() {
 		return questionId;
 	}
-	/**
-	 * @param questionId the questionId to set
-	 */
+
 	public void setQuestionId(int questionId) {
 		this.questionId = questionId;
 	}
-	/**
-	 * @return the answer
-	 */
-	public int getAnswer() {
-		return answer;
-	}
-	/**
-	 * @param answer the answer to set
-	 */
-	public void setAnswer(int answer) {
-		this.answer = answer;
+
+	public long getCount() {
+		return count;
 	}
 
+	public void setCount(long count) {
+		this.count = count;
+	}
 }

@@ -1,6 +1,8 @@
 package guessFilm.model;
 
 
+import guessFilm.DataBase;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -28,8 +30,13 @@ public class Samples {
 
 	public void appendNewSamples() {
 		// read from file
+		DataBase db = new DataBase();
+		Films films = new Films();
+		films.initialize(db.findFilm());
+		
+		
 		try {
-			Scanner scanner = new Scanner(new File("trainset.txt"));
+			Scanner scanner = new Scanner(new File("data/trainset.txt"));
 			int filmsAmount = scanner.nextInt();
 			int questionAmount = scanner.nextInt();
 			try {
@@ -42,8 +49,21 @@ public class Samples {
 						listSamples.add(newSample);
 					}
 					int trueFilm = scanner.nextInt();
+					
+					films.getFilm(trueFilm).setCount(films.getFilm(trueFilm).getCount() + 1);
+					db.editFilm(films.getFilm(trueFilm));
+					
 					for (int j = 0; j < questionAmount - 1; j++) {
 						listSamples.get(i * (questionAmount - 1) + j).setFilmId(trueFilm);
+						if (listSamples.get(i * (questionAmount - 1) + j).getAnswer() == 1) {
+							PositiveAnswers positiveAnswers = db.findPositiveAnswers(trueFilm, j + 1);
+							positiveAnswers.setCount(positiveAnswers.getCount() + 1);
+							db.editPositiveAnswers(positiveAnswers);
+						} else {
+							NegativeAnswers negativeAnswers = db.findNegativeAnswers(trueFilm, j + 1);
+							negativeAnswers.setCount(negativeAnswers.getCount() + 1);
+							db.editNegativeAnswers(negativeAnswers);
+						}
 					}
 					
 				}

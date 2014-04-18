@@ -23,29 +23,8 @@ public class Question {
 	
 	@Column(name="name")
 	private String name;
-	
-	//private boolean used = false;
-	
-	/*public Question() {
-		id = -1;
-		used = false;
-	}
 
-	public Question(int idQuestion) {
-		used = false;
-		id = idQuestion;
-		
-		DataBase dataBase = new DataBase();
-		name = dataBase.selectQuestionName(id);
-	}
-	
-	public Question(int id, String name) {
-		this.id = id;
-		this.name = name;
-	}*/
-	
 	public Question() {
-	//	this.used = false;
 	}
 	
 	public Question(String name) {
@@ -67,25 +46,5 @@ public class Question {
 	public void setName(String name) {
 		this.name = name;
 	}
-
-	/*public void setQuestionUsed(boolean used) {
-		this.used = used;
-	}*/
-
-	/**
-	 * Append new Question into database
-	 * @return
-	 */
-	/*public void appendNewQuestion(int idQuestion) {
-		// TODO append new question into database
-	}*/
-	
-	/*public boolean isUsed() {
-		return used;
-	}*/
-
-	/*public void setUsed() {
-		used = true;
-	}*/
 
 }

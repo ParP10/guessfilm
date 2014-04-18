@@ -19,6 +19,12 @@ import java.util.ArrayList;
 public class Films {
 	private int amountFilms;
 	private ArrayList<Film> listFilms;
+	/*
+	 * prob[f] = P(f| <q_i, A_i>) = P(f) * P(<q_i, A_i> | f), i = 1,k
+	 * q_i = questions[i]
+	 * A_i = answers[i] 
+	 */
+	private double prob[];
 	
 	public ArrayList<Film> getListFilms() {
 		return listFilms;
@@ -37,9 +43,26 @@ public class Films {
 	}
 
 
+	public double[] getProb() {
+		return prob;
+	}
+
+	public void setProb(double[] prob) {
+		this.prob = prob;
+	}
+	
+	public double getProb(int i) {
+		return prob[i];
+	}
+	
+	public void setProb(int i, double prob) {
+		this.prob[i] = prob;
+	}
+
 	public void initialize(ArrayList<Film> listFilms) {
 		this.listFilms = listFilms;
 		this.amountFilms = listFilms.size();
+		this.prob = new double[this.amountFilms];
 	}
 
 
@@ -53,6 +76,7 @@ public class Films {
 	 */
 	public Film getFilm(int idFilm) {
 		// TODO Optimize here
+		if (idFilm > amountFilms) idFilm = 1;
 		return listFilms.get(idFilm - 1);
 	}
 	
@@ -69,10 +93,12 @@ public class Films {
 		// append new films in database from "newFilms.txt"
 		//int index = amountFilms + 1;
 		DataBase dao = new DataBase();
+		Questions questions = new Questions(null);
+		questions.initialize(dao.findQuestion());
 		
 		// read from file
 		try {
-			InputStream inputStream = new FileInputStream(new File("newFilms.txt"));
+			InputStream inputStream = new FileInputStream(new File("data/newFilms.txt"));
 			BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 			try {
 				String line = reader.readLine();
@@ -82,7 +108,22 @@ public class Films {
 					Film newFilm = new Film(line);
 					listFilms.add(newFilm);
 					amountFilms++;
-					dao.addFilm(newFilm);
+					int newId = dao.addFilm(newFilm);
+					
+					for (int j = 0; j < questions.getAmountQuestions(); j++) {
+						PositiveAnswers positiveAnswers = new PositiveAnswers();
+						positiveAnswers.setQuestionId(j + 1);
+						positiveAnswers.setFilmId(newId);
+						positiveAnswers.setCount(0);
+						dao.addPositiveAnswers(positiveAnswers);
+						
+						NegativeAnswers negativeAnswers = new NegativeAnswers();
+						negativeAnswers.setQuestionId(j + 1);
+						negativeAnswers.setFilmId(newId);
+						negativeAnswers.setCount(0);
+						dao.addNegativeAnswers(negativeAnswers);
+					}
+					
 					line = reader.readLine();
 					
 				}
@@ -111,12 +152,12 @@ public class Films {
 		}*/
 	}
 
-	public void appendNewFilm(String name) {
+	public int appendNewFilm(String name) {
 		DataBase dao = new DataBase();
 		Film newFilm = new Film(name);
 		listFilms.add(newFilm);
 		amountFilms++;
-		dao.addFilm(newFilm);
+		return dao.addFilm(newFilm);
 	}
 
 }

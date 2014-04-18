@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+﻿<?xml version='1.0' encoding='utf-8'?>
 <!DOCTYPE hibernate-configuration PUBLIC
     "-//Hibernate/Hibernate Configuration DTD//EN"
     "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
@@ -32,6 +32,8 @@
         <mapping class="guessFilm.model.Film"/>
         <mapping class="guessFilm.model.Question"/>
         <mapping class="guessFilm.model.Sample"/>
+		<mapping class="guessFilm.model.PositiveAnswers"/>
+		<mapping class="guessFilm.model.NegativeAnswers"/>
  
     </session-factory>
  

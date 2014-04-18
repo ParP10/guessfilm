@@ -26,10 +26,11 @@ public class MainFrameServlet extends HttpServlet {
 		switch(answer) {
 		case 1:
 			GuessFilmServlet guessFilmServlet = new GuessFilmServlet();
+			guessFilm.newClassifier();
 			req.setAttribute("guessFilm", guessFilm);
 			Question question = new Question();
 			
-			question = guessFilm.getNextQuestion();
+			question = guessFilm.getNextQuestion(null);
 			req.setAttribute("question", question);
 			
 			Film film = new Film();
@@ -64,7 +65,7 @@ public class MainFrameServlet extends HttpServlet {
 		default:
 			getServletContext().getRequestDispatcher("/MainFrame.jsp").forward(req, resp);
 			guessFilm.guessInit();
-			break;
+			//break;
 		}
 	}
 

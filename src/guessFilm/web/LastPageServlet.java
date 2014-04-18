@@ -13,8 +13,9 @@ public class LastPageServlet extends HttpServlet{
 	static GuessFilm guessFilm;
 	protected void processRequest(HttpServletRequest req, HttpServletResponse resp)	throws Exception {
 		req.setCharacterEncoding("UTF-8");
+		guessFilm.removeSamples();
+		System.out.println("At the end");
 		if (req.getParameter("start")!= null) {
-			guessFilm.removeSamples();
 			getServletContext().getRequestDispatcher("/MainFrame.jsp").forward(req, resp);
 		} else {
 			getServletContext().getRequestDispatcher("/LastPageFrame.jsp").forward(req, resp);
