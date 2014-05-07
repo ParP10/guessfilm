@@ -40,6 +40,20 @@ public class DataBase {
 	    session.getTransaction().commit();
 	    return result;
 	 }
+	 
+	 public Film findFilm(String name) {
+		 Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		 session.beginTransaction();
+		 
+		 ArrayList<Film> result = (ArrayList<Film>) session.createCriteria(Film.class)
+	    	.add(Restrictions.like("name", name)).list();
+		 Film film = null;
+		 if (result.size() != 0) {
+			 film = result.get(0);
+		 }
+		 session.getTransaction().commit();
+		 return film;
+	 }
 	
 	public int addQuestion(Question question) {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -58,14 +72,28 @@ public class DataBase {
 	}
 	
 	
-	 public ArrayList<Question> findQuestion() {
-	    Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+	public ArrayList<Question> findQuestion() {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 	    session.beginTransaction();
 	    
 		@SuppressWarnings("unchecked")
-		ArrayList<Question> result = (ArrayList<Question>) session.createQuery("from questions").list();
+			ArrayList<Question> result = (ArrayList<Question>) session.createQuery("from questions").list();
 	    session.getTransaction().commit();
 	    return result;
+	}
+	
+	public Question findQuestion(String name) {
+		 Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		 session.beginTransaction();
+		 
+		 ArrayList<Question> result = (ArrayList<Question>) session.createCriteria(Question.class)
+	    	.add(Restrictions.like("name", name)).list();
+		 Question question = null;
+		 if (result.size() != 0) {
+			 question = result.get(0);
+		 }
+		 session.getTransaction().commit();
+		 return question;
 	 }
 	 
 	public long addSample(Sample sample) {

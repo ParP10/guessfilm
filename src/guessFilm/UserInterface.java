@@ -92,6 +92,7 @@ public class UserInterface {
 		System.out.println("3 - add questions in database");
 		System.out.println("4 - add films in database");
 		System.out.println("5 - add samples in database from file");
+		System.out.println("6 - kinopoisk mode");
 		
 		Scanner in = new Scanner(System.in);
 		int mode = in.nextInt();
@@ -106,6 +107,8 @@ public class UserInterface {
 			return GuessFilm.Mode.APPEND_NEW_FILMS;
 		case 5:
 			return GuessFilm.Mode.APPEND_NEW_SAMPLES;
+		case 6:
+			return GuessFilm.Mode.APPEND_FILMS_AND_QUESTIONS_FROM_KINOPOISK;
 		default:
 			System.out.println("Wrong input");
 			break;

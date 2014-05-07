@@ -1,6 +1,16 @@
 package guessFilm;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import guessFilm.Learning.ClassifierType;
 import guessFilm.model.Film;
@@ -21,7 +31,7 @@ import guessFilm.model.Samples;
 public class GuessFilm {
 
 	public enum Mode {
-		TRAINING_MODE, GUESS_MODE, APPEND_NEW_QUESTIONS, APPEND_NEW_FILMS, APPEND_NEW_SAMPLES;
+		TRAINING_MODE, GUESS_MODE, APPEND_NEW_QUESTIONS, APPEND_NEW_FILMS, APPEND_NEW_SAMPLES, APPEND_FILMS_AND_QUESTIONS_FROM_KINOPOISK;
 	};
 
 	public enum AnswerOnQuestion {
@@ -66,12 +76,142 @@ public class GuessFilm {
 				break;
 			case APPEND_NEW_SAMPLES:
 				guessFilm.addSamples();
+			case APPEND_FILMS_AND_QUESTIONS_FROM_KINOPOISK:
+				guessFilm.kinopoisk();
 			default:
 				break;
 		}
 		System.out.println("End!");
 	}
 
+
+	private void kinopoisk() throws IOException {
+		File filmsDirectory = new File("data/film");
+		File[] films = filmsDirectory.listFiles();
+		
+		for (int i = 0; i < films.length; i++) {
+			System.out.println(films[i].getName());
+			if (films[i].isDirectory()) {
+				File[] params = films[i].listFiles();
+				int j = 0;
+				for (; j < params.length; j++) {
+					if (params[j].getName().equals("keywords")) {
+						break;
+					}
+				}
+				if (j == params.length) {
+					continue;
+				}
+				String currentFilm = null;
+				int h = 0;
+				for (; h < params.length; h++) {
+					if (params[h].getName().equals("default.htm")) {
+						currentFilm = getFilm(params[h]);
+						break;
+					}
+				}
+				if (h == params.length) {
+					continue;
+				}
+				File[] keywords = params[j].listFiles();
+				for (j = 0; j < keywords.length; j++) {
+					if (keywords[j].getName().equals("default.htm")) {
+						processTags(currentFilm, keywords[j]);
+					}
+				}
+			}
+		}
+		
+	}
+
+	private void processTags(String filmName, File file) throws IOException {
+		DataBase db = new DataBase();
+		Film currentFilm = db.findFilm(filmName);
+		// if film already exists in db
+		if (currentFilm != null) {
+			return;
+		}
+		currentFilm = new Film();
+		currentFilm.setName(filmName);
+		currentFilm.setId(db.addFilm(currentFilm));
+		currentFilm.setCount(1);
+		// get list of tags for this film
+		ArrayList <String> tags = retrieveTags(file);
+		// create new questions and samples
+		for (int i = 0; i < tags.size(); i++) {
+			Question question = db.findQuestion(tags.get(i));
+			//create question
+			if (question == null) {
+				// create question
+				question = new Question();
+				question.setName(tags.get(i));
+				question.setId(db.addQuestion(question));
+			}
+			// create sample
+			Sample sample = new Sample();
+			sample.setFilmId(currentFilm.getId());
+			sample.setQuestionId(question.getId());
+			sample.setAnswer(1); // Answer: YES
+		}
+		
+	}
+
+	private ArrayList <String> retrieveTags(File file) throws IOException {
+		ArrayList <String> tags = new ArrayList <String>();
+		//regex
+		Pattern pattern = Pattern.compile("data-real-keyword=\"[^\"]+");
+		// text
+		Matcher matcher = null;
+		String line = null;
+		BufferedReader reader = new BufferedReader(new FileReader(file));
+		while((line = reader.readLine()) != null) {
+			if (line.contains("data-real-keyword")) {
+				matcher = pattern.matcher(line);
+				matcher.find();
+				tags.add(matcher.group().substring(19));
+			}
+		}
+		return tags;
+	}
+
+	private String getFilm(File file) throws IOException {
+		//regex
+		Pattern pattern = Pattern.compile("name_film_html = '[^']*");
+		// text
+		Matcher matcher = null;
+		String line = null;
+		FileReader fr = new FileReader(file);
+		//System.out.println(fr.getEncoding());
+		BufferedReader reader = new BufferedReader(fr);
+		while((line = reader.readLine()) != null) {
+			//System.out.println(line);
+			if (line.contains("name_film_html")) {
+				
+				//String res = new String(line.getBytes("UTF-8"), "Cp1251");
+				//System.out.println(res);
+				matcher = pattern.matcher(line);
+				
+				break;
+			}
+		}
+		matcher.find();
+		String film = matcher.group();
+		film = film.substring(18);
+		System.out.println(film);
+		return film;
+	}
+	
+	/*private void convertEncoding(File file, String newEncoding) {
+		InputStream in = new FileInputStream(file);
+	    OutputStream out = new FileOutputStream(outfile);
+	    Reader r=new BufferedReader(new InputStreamReader(in, from));
+	    Writer w=new BufferedWriter(new OutputStreamWriter(out, to));
+		char[] buffer=new char[4096];
+	    int len;
+	    while((len=r.read(buffer)) != -1)
+	        w.write(buffer, 0, len);
+		
+	}*/
 
 	public void guess() throws Exception {
 
