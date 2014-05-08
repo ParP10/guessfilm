@@ -152,6 +152,7 @@ public class GuessFilm {
 			sample.setFilmId(currentFilm.getId());
 			sample.setQuestionId(question.getId());
 			sample.setAnswer(1); // Answer: YES
+			db.addSample(sample);
 		}
 		
 	}
